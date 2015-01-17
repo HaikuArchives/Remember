@@ -27,7 +27,7 @@ typedef struct event_s {
 
 class Remember : public BApplication {
 public:
-							Remember(const char *appPath);
+							Remember();
 							~Remember();
 
 		void				AddEvent(entry_ref *ref, bool watch);

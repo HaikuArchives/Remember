@@ -6,12 +6,16 @@
 */
 
 #include <Alert.h>
+#include <Bitmap.h>
 #include <Directory.h>
 #include <Entry.h>
 #include <FindDirectory.h>
+#include <IconUtils.h>
 #include <Node.h>
 #include <NodeMonitor.h>
+#include <Notification.h>
 #include <Path.h>
+#include <Roster.h>
 #include <stdio.h>
 #include "Remember.h"
 #include "EventColumns.h"
@@ -25,7 +29,7 @@
 int
 main(int argc, const char *argv[])
 {
-	Remember app(argv[0]);
+	Remember app;
 	app.Run();
 	return 0;
 }
@@ -38,7 +42,7 @@ EventSort(const void *item1, const void *item2)
 }
 
 
-Remember::Remember(const char *appPath)
+Remember::Remember()
 	:	BApplication("application/x-vnd.mmlr.remember"),
 		fEvents(),
 		fAllEvents(),
@@ -78,6 +82,19 @@ Remember::Remember(const char *appPath)
 		watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);
 	} else
 		printf("Events directory not found (\"%s\")\n", fEventDir.String());
+
+	BNotification notification(B_INFORMATION_NOTIFICATION);
+	notification.SetTitle("Running");
+	notification.SetContent("Remember is running and waiting for events!");
+	
+	app_info info;
+	GetAppInfo(&info);
+	BNode node(&info.ref);
+	BBitmap icon(BRect(0, 0, 64, 64), B_RGBA32);
+	BIconUtils::GetVectorIcon(&node, "BEOS:ICON", &icon);
+	
+	notification.SetIcon(&icon);
+	notification.Send();
 
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
@@ -251,9 +268,9 @@ Remember::EventLoop(void *data)
 			if (event->when > real_time_clock())
 				break;
 
-			BString buffer = "Event Notification\n------------------\n";
+			BString buffer = "Event notification\n------------------\n";
 			buffer << "Where:\t" << event->where << "\n";
-			buffer << "What:\t\t" << event->what;
+			buffer << "What:\t" << event->what;
 			BAlert *alert = new BAlert("Event", buffer.String(), "Delete", "Keep");
 			alert->SetShortcut(0, B_DELETE);
 			alert->SetShortcut(1, B_ESCAPE);
