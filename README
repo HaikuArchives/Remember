@@ -1,0 +1,19 @@
+Notify is a small app for Haiku, which allows you to get notifications about
+events easily, by adding files into an Events folder. It will automatically
+find those and, when the time you chose has arrived, it will pop up with a 
+notification, warning you about the event.
+
+To use it, just compile the source and place it wherever you like. When
+starting the app for the first time, it will make an Events folder in your home
+directory and set the correct columns.
+
+To add an event, open the folder in Tracker and create a new file. Then fill in
+the When, Where and What columns. When can be stuff like:
+
+    3 days (in 3 days, at 12:00:00 AM)
+    5 seconds (in 5 seconds)
+    next friday 7 an (next friday, at 7:00:00 AM)
+    1st february 2016 3:43 pm (1-2-2016 3:43:00 PM)
+
+What and Where are text fields and can be filled in as you want. Events can
+also be copied and moved.
