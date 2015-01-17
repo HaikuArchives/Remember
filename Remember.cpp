@@ -8,10 +8,13 @@
 #include <Alert.h>
 #include <Directory.h>
 #include <Entry.h>
+#include <FindDirectory.h>
 #include <Node.h>
 #include <NodeMonitor.h>
+#include <Path.h>
 #include <stdio.h>
 #include "Remember.h"
+#include "EventColumns.h"
 
 #define EVENT_DIRECTORY	"Events"
 #define WHEN_ATTR		"event:when"
@@ -45,11 +48,26 @@ Remember::Remember(const char *appPath)
 	fEventLock = create_sem(1, "event lock semaphore");
 	fNotify = create_sem(0, "notify semaphore");
 
-	fEventDir = appPath;
-	fEventDir.Truncate(fEventDir.FindLast("/") + 1);
-	fEventDir += EVENT_DIRECTORY;
+	BPath homeDir;
+	find_directory(B_USER_DIRECTORY, &homeDir);
+
+	fEventDir = homeDir.Path();
+	fEventDir << "/" << EVENT_DIRECTORY;
 
 	BDirectory directory(fEventDir.String());
+	if (directory.InitCheck() == B_ENTRY_NOT_FOUND) {
+		BDirectory homeDirectory(homeDir.Path());
+		status_t result = homeDirectory.CreateDirectory(EVENT_DIRECTORY,
+			&directory);
+		if (result != B_OK)
+			printf("Failed to create events directory (%s)\n",
+				strerror(result));
+		ssize_t written = directory.WriteAttr("_trk/columns_le", B_RAW_TYPE,
+			0, event_columns, sizeof(event_columns));
+		if (written < 0)
+			printf("Failed to write column info (%s)\n", strerror(written));
+	}
+
 	if (directory.InitCheck() == B_OK) {
 		entry_ref ref;
 		while (directory.GetNextRef(&ref) == B_OK)
