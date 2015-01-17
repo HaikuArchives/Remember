@@ -1,4 +1,4 @@
-Notify is a small app for Haiku, which allows you to get notifications about
+Remember is a small app for Haiku, which allows you to get notifications about
 events easily, by adding files into an Events folder. It will automatically
 find those and, when the time you chose has arrived, it will pop up with a 
 notification, warning you about the event.
@@ -17,3 +17,5 @@ the When, Where and What columns. When can be stuff like:
 
 What and Where are text fields and can be filled in as you want. Events can
 also be copied and moved.
+
+Remember is copyright 2005 Michael Lotz, and released under the MIT license.
